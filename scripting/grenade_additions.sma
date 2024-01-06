@@ -21,12 +21,12 @@ _____/\\\\\\\\\_____/\\\\____________/\\\\__/\\\_______/\\\__/\\\_______/\\\____
 
 
 #include <amxmodx>
-#include <reapi>
+#include <reapi_stocks>
 
 #define CC_COLORS_TYPE CC_COLORS_SHORT
 #include <cromchat>
 
-#define VERSION "1.0.0"
+#define VERSION "1.0.10"
 
 new const TRAILBEAM_SPR[] = "sprites/arrow1.spr"
 new g_iSprTrailBeam
@@ -63,6 +63,8 @@ enum _:eRGBA
 	R, G, B, A
 }
 new g_eRGBA[eType][eRGBA]
+
+new const g_szSound[] = "radio/ct_fireinhole.wav"
 
 public plugin_init()
 {
@@ -127,6 +129,8 @@ public plugin_init()
 
 	// Auto Config Create & Load
 	AutoExecConfig(true, "Grenade_Additions", "HuehuePlugins_Config")
+
+	register_message(get_user_msgid("SendAudio"), "MessageSendAudio")
 }
 
 public OnConfigsExecuted()
@@ -141,6 +145,7 @@ public OnConfigsExecuted()
 public plugin_precache()
 {
 	g_iSprTrailBeam = precache_model(TRAILBEAM_SPR)
+	precache_sound(g_szSound)
 }
 
 public CBasePlayer_Radio_Pre(const iPlayer, const szMessageId[], const szMessageVerbose[], iPitch, bool:bShowIcon)
@@ -180,6 +185,8 @@ public ThrowHeGrenade(const id, Float:vecStart[3], Float:vecVelocity[3], Float:t
 
 	if (g_eGrenadeAdditions[CHAT_MESSAGE] && g_eGrenadeAdditions[CHAT_MESSAGE_HE] != EOS)
 		CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_HE], id)
+
+	emit_sound(id, CHAN_VOICE, g_szSound, 1.0, ATTN_NORM, 0, PITCH_NORM)
 }
 
 public ThrowFlashbang(const id, Float:vecStart[3], Float:vecVelocity[3], Float:time)
@@ -206,6 +213,8 @@ public ThrowFlashbang(const id, Float:vecStart[3], Float:vecVelocity[3], Float:t
 	
 	if (g_eGrenadeAdditions[CHAT_MESSAGE] && g_eGrenadeAdditions[CHAT_MESSAGE_FLASH] != EOS)
 		CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_FLASH], id)
+
+	emit_sound(id, CHAN_VOICE, g_szSound, 1.0, ATTN_NORM, 0, PITCH_NORM)
 }
 
 public ThrowSmokeGrenade(const id, Float:vecStart[3], Float:vecVelocity[3], Float:time, const usEvent)
@@ -232,6 +241,26 @@ public ThrowSmokeGrenade(const id, Float:vecStart[3], Float:vecVelocity[3], Floa
 
 	if (g_eGrenadeAdditions[CHAT_MESSAGE] && g_eGrenadeAdditions[CHAT_MESSAGE_SMOKE] != EOS)
 		CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_SMOKE], id)
+
+	emit_sound(id, CHAN_VOICE, g_szSound, 1.0, ATTN_NORM, 0, PITCH_NORM)
+}
+
+public MessageSendAudio() // Тут блокируем стандартный звук
+{
+	if(EqualValue( 2, "%!MRAD_FIREINHOLE" ))
+	{
+		return PLUGIN_HANDLED;
+	}
+	
+	return PLUGIN_CONTINUE;
+}
+
+EqualValue( const iParam, const szString[ ] ) 
+{
+	new szTemp[ 18 ];
+	get_msg_arg_string( iParam, szTemp, 17 );
+
+	return ( equal( szTemp, szString ) ) ? 1 : 0;
 }
 
 UTIL_CreateTrail(iEntity, iLife = 10, iWidth = 10, iRed, iGreen, iBlue, iBrightness = 100)
@@ -317,11 +346,11 @@ GenerateNewColors()
 		g_eRGBA[SMOKE_GRENADE][A] = str_to_num(g_eGrenadeAdditions[SMOKE_GRENADE_COLORS])
 	}
 }
-
+/*
 stock rg_set_entity_rendering(const entity, fx = kRenderFxNone, Float:color[] = {255.0, 255.0, 255.0}, render = kRenderNormal, Float:amount = 16.0) 
 {
 	set_entvar(entity, var_renderfx, fx)
 	set_entvar(entity, var_rendercolor, color)
 	set_entvar(entity, var_rendermode, render)
 	set_entvar(entity, var_renderamt, amount)
-}
+}*/
