@@ -26,7 +26,7 @@ _____/\\\\\\\\\_____/\\\\____________/\\\\__/\\\_______/\\\__/\\\_______/\\\____
 #define CC_COLORS_TYPE CC_COLORS_SHORT
 #include <cromchat>
 
-#define VERSION "1.0.10"
+#define VERSION "1.0.11"
 
 new const TRAILBEAM_SPR[] = "sprites/arrow1.spr"
 new g_iSprTrailBeam
@@ -37,6 +37,7 @@ const MAX_CHAT_MESSAGE_LENGTH = 128
 enum _:eCvarSettings
 {
 	CHAT_MESSAGE,
+	CHAT_MESSAGES_TEAM_OR_NOT,
 	TRAIL_FOLLOW,
 	NADE_GLOW,
 	HE_GRENADE_COLORS[MAX_COLORS_LENGTH],
@@ -81,6 +82,9 @@ public plugin_init()
 	// Basic settings to enable/disable
 	pCvar = create_cvar("ga_chat_message", "1", FCVAR_NONE, "Enable/Disable the message in chat for what type nade is thrown", true, 0.0, true, 1.0)
 	bind_pcvar_num(pCvar, g_eGrenadeAdditions[CHAT_MESSAGE])
+
+	pCvar = create_cvar("ga_chat_team_message", "1", FCVAR_NONE, "Enable/Disable the message whether to be for team only or not", true, 0.0, true, 1.0)
+	bind_pcvar_num(pCvar, g_eGrenadeAdditions[CHAT_MESSAGES_TEAM_OR_NOT])
 
 	pCvar = create_cvar("ga_trail_follow", "1", FCVAR_NONE, "Enable/Disable the trail following the grenade after throw", true, 0.0, true, 1.0)
 	bind_pcvar_num(pCvar, g_eGrenadeAdditions[TRAIL_FOLLOW])
@@ -184,7 +188,23 @@ public ThrowHeGrenade(const id, Float:vecStart[3], Float:vecVelocity[3], Float:t
 		UTIL_CreateTrail(iEntity, g_eGrenadeAdditions[HE_TRAIL_LIFE], g_eGrenadeAdditions[HE_TRAIL_WIDTH], g_eRGBA[HE_GRENADE][R], g_eRGBA[HE_GRENADE][G], g_eRGBA[HE_GRENADE][B], g_eRGBA[HE_GRENADE][A])
 
 	if (g_eGrenadeAdditions[CHAT_MESSAGE] && g_eGrenadeAdditions[CHAT_MESSAGE_HE] != EOS)
-		CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_HE], id)
+	{
+		if (g_eGrenadeAdditions[CHAT_MESSAGES_TEAM_OR_NOT])
+		{
+			new iPlayers[MAX_PLAYERS], iNum, iPlayer
+			get_players(iPlayers, iNum)
+			
+			for (--iNum; iNum >= 0; iNum--)
+			{
+				iPlayer = iPlayers[iNum]
+
+				if (rg_get_user_team(id) == rg_get_user_team(iPlayer))
+					CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_HE], id)
+			}
+		}
+		else
+			CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_HE], id)
+	}
 
 	emit_sound(id, CHAN_VOICE, g_szSound, 1.0, ATTN_NORM, 0, PITCH_NORM)
 }
@@ -212,7 +232,23 @@ public ThrowFlashbang(const id, Float:vecStart[3], Float:vecVelocity[3], Float:t
 		UTIL_CreateTrail(iEntity, g_eGrenadeAdditions[FLASH_TRAIL_LIFE], g_eGrenadeAdditions[FLASH_TRAIL_WIDTH], g_eRGBA[FLASH_BANG][R], g_eRGBA[FLASH_BANG][G], g_eRGBA[FLASH_BANG][B], g_eRGBA[FLASH_BANG][A])
 	
 	if (g_eGrenadeAdditions[CHAT_MESSAGE] && g_eGrenadeAdditions[CHAT_MESSAGE_FLASH] != EOS)
-		CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_FLASH], id)
+	{
+		if (g_eGrenadeAdditions[CHAT_MESSAGES_TEAM_OR_NOT])
+		{
+			new iPlayers[MAX_PLAYERS], iNum, iPlayer
+			get_players(iPlayers, iNum)
+			
+			for (--iNum; iNum >= 0; iNum--)
+			{
+				iPlayer = iPlayers[iNum]
+
+				if (rg_get_user_team(id) == rg_get_user_team(iPlayer))
+					CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_FLASH], id)
+			}
+		}
+		else
+			CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_FLASH], id)
+	}
 
 	emit_sound(id, CHAN_VOICE, g_szSound, 1.0, ATTN_NORM, 0, PITCH_NORM)
 }
@@ -240,7 +276,23 @@ public ThrowSmokeGrenade(const id, Float:vecStart[3], Float:vecVelocity[3], Floa
 		UTIL_CreateTrail(iEntity, g_eGrenadeAdditions[SMOKE_TRAIL_LIFE], g_eGrenadeAdditions[SMOKE_TRAIL_WIDTH], g_eRGBA[SMOKE_GRENADE][R], g_eRGBA[SMOKE_GRENADE][G], g_eRGBA[SMOKE_GRENADE][B], g_eRGBA[SMOKE_GRENADE][A])
 
 	if (g_eGrenadeAdditions[CHAT_MESSAGE] && g_eGrenadeAdditions[CHAT_MESSAGE_SMOKE] != EOS)
-		CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_SMOKE], id)
+	{
+		if (g_eGrenadeAdditions[CHAT_MESSAGES_TEAM_OR_NOT])
+		{
+			new iPlayers[MAX_PLAYERS], iNum, iPlayer
+			get_players(iPlayers, iNum)
+			
+			for (--iNum; iNum >= 0; iNum--)
+			{
+				iPlayer = iPlayers[iNum]
+
+				if (rg_get_user_team(id) == rg_get_user_team(iPlayer))
+					CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_SMOKE], id)
+			}
+		}
+		else
+			CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_SMOKE], id)
+	}
 
 	emit_sound(id, CHAN_VOICE, g_szSound, 1.0, ATTN_NORM, 0, PITCH_NORM)
 }
