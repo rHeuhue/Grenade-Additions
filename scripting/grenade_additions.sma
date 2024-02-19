@@ -199,7 +199,7 @@ public ThrowHeGrenade(const id, Float:vecStart[3], Float:vecVelocity[3], Float:t
 				iPlayer = iPlayers[iNum]
 
 				if (rg_get_user_team(id) == rg_get_user_team(iPlayer))
-					CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_HE], id)
+					CC_SendMatched(iPlayer, id, g_eGrenadeAdditions[CHAT_MESSAGE_HE], id)
 			}
 		}
 		else
@@ -243,7 +243,7 @@ public ThrowFlashbang(const id, Float:vecStart[3], Float:vecVelocity[3], Float:t
 				iPlayer = iPlayers[iNum]
 
 				if (rg_get_user_team(id) == rg_get_user_team(iPlayer))
-					CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_FLASH], id)
+					CC_SendMatched(iPlayer, id, g_eGrenadeAdditions[CHAT_MESSAGE_FLASH], id)
 			}
 		}
 		else
@@ -287,7 +287,7 @@ public ThrowSmokeGrenade(const id, Float:vecStart[3], Float:vecVelocity[3], Floa
 				iPlayer = iPlayers[iNum]
 
 				if (rg_get_user_team(id) == rg_get_user_team(iPlayer))
-					CC_SendMatched(0, id, g_eGrenadeAdditions[CHAT_MESSAGE_SMOKE], id)
+					CC_SendMatched(iPlayer, id, g_eGrenadeAdditions[CHAT_MESSAGE_SMOKE], id)
 			}
 		}
 		else
